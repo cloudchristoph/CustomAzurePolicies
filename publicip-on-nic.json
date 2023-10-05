@@ -1,0 +1,44 @@
+{
+    "displayName": "Network interfaces should not have Public IPs",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "This policy checks network interfaces which are configured with any public IP. (Build-in policy doesn't have the option to choose the effect.)",
+    "metadata": {
+        "version": "1.0.0",
+        "category": "Network"
+    },
+    "parameters": {
+        "effect": {
+            "type": "String",
+            "metadata": {
+                "displayName": "Effect",
+                "description": "Enable or disable the execution of the policy"
+            },
+            "allowedValues": [
+                "audit",
+                "deny",
+                "disabled"
+            ],
+            "defaultValue": "audit"
+        }
+    },
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "equals": "Microsoft.Network/networkInterfaces"
+                },
+                {
+                    "not": {
+                        "field": "Microsoft.Network/networkInterfaces/ipconfigurations[*].publicIpAddress.id",
+                        "notLike": "*"
+                    }
+                }
+            ]
+        },
+        "then": {
+            "effect": "[parameters('effect')]"
+        }
+    }
+}
